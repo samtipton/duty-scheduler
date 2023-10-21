@@ -1,0 +1,45 @@
+{
+    "name": "2nd Service 10:30",
+    "duties": [
+        {
+            "name": "Announcements",
+            "key": "announcements"
+        },
+        {
+            "name": "Song Leader",
+            "key": "song_leader"
+        },
+        {
+            "name": "Scripture Reading",
+            "key": "scripture_reading"
+        },
+        {
+            "name": "Opening Prayer",
+            "key": "opening_prayer"
+        },
+        {
+            "name": "Closing Prayer",
+            "key": "closing_prayer"
+        },
+        {
+            "name": "Table Aid Cup (N)",
+            "key": "table_aid_cup"
+        },
+        {
+            "name": "Table Lead Cup (N)",
+            "key": "table_lead_cup"
+        },
+        {
+            "name": "Table Lead Bread (S)",
+            "key": "table_lead_bread"
+        },
+        {
+            "name": "Table Aid Bread (S)",
+            "key": "table_aid_bread"
+        },
+        {
+            "name": "Lesson",
+            "key": "lesson"
+        }
+    ]
+}

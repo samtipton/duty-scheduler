@@ -1,0 +1,17 @@
+{
+    "first_name": "Jeff",
+    "last_name": "Nunn",
+    "duties": [
+        "announcements",
+        "wednesday_announcements",
+        "first_lesson",
+        "opening_prayer",
+        "closing_prayer",
+        "table_lead_cup",
+        "table_aid_cup",
+        "table_lead_bread",
+        "table_aid_bread",
+        "wednesday_opening_prayer",
+        "wednesday_closing_prayer"
+    ]
+}

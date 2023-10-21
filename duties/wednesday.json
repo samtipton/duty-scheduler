@@ -1,0 +1,25 @@
+{
+    "name": "Wednesday",
+    "duties": [
+        {
+            "name": "Announcements",
+            "key": "wednesday_announcements"
+        },
+        {
+            "name": "Song Leader",
+            "key": "wednesday_song_leader"
+        },
+        {
+            "name": "Opening Prayer",
+            "key": "wednesday_opening_prayer"
+        },
+        {
+            "name": "Closing Prayer",
+            "key": "wednesday_closing_prayer"
+        },
+        {
+            "name": "Lesson",
+            "key": "wednesday_lesson"
+        }
+    ]
+}

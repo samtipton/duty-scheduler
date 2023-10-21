@@ -1,0 +1,17 @@
+{
+    "name": "1st Service 9:00 - 9:30",
+    "duties": [
+        {
+            "name": "Song Leader",
+            "key": "first_song_leader"
+        },
+        {
+            "name": "Opening Prayer",
+            "key": "first_opening_prayer"
+        },
+        {
+            "name": "Lesson",
+            "key": "first_lesson"
+        }
+    ]
+}

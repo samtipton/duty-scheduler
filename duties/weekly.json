@@ -1,0 +1,20 @@
+{
+    "duties": [
+        {
+            "name": "Weekly Usher",
+            "key": "usher"
+        },
+        {
+            "name": "Weekly Alt Usher",
+            "key": "alt_usher"
+        },
+        {
+            "name": "Sound Board Operator",
+            "key": "sound_board_operator"
+        },
+        {
+            "name": "SS",
+            "key": "security"
+        }
+    ]
+}
