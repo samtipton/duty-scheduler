@@ -18,8 +18,8 @@
         "wednesday_closing_prayer",
         "wednesday_lesson",
         "sound_board_operator",
-        "weekly_usher",
-        "weekly_alt_usher",
+        "usher",
+        "alt_usher",
         "security"
     ]
 }

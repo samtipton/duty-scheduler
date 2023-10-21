@@ -15,8 +15,8 @@
         "wednesday_lesson",
         "sound_board_operator",
         "lords_supper_prep",
-        "weekly_usher",
-        "weekly_alt_usher",
+        "usher",
+        "alt_usher",
         "security"
     ]
 }

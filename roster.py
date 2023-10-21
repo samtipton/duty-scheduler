@@ -38,8 +38,7 @@ def main():
     year = int(sys.argv[2])
     pdf_output_file = sys.argv[3]
 
-    if '--debug' in sys.argv:
-        debug = True
+    debug = '--debug' in sys.argv
 
     year_month = year + month  # for round robin index
     cal = calendar.monthcalendar(year, month)
@@ -49,9 +48,17 @@ def main():
 
     # consider using objects
     for i, week in enumerate(cal):
+
         # weekly duties
-        schedule['security'] = duty_index['security'][year_month %
-                                                      len(duty_index['security'])]
+        weekly_schedule = {}
+        for duty in service_duties['weekly']['duties']:
+            weekly_schedule[duty['name']] = duty_index[duty['key']][(i+year_month) % len(
+                duty_index[duty['key']])]
+
+        if 'weekly' not in schedule:
+            schedule['weekly'] = {}
+
+        schedule['weekly'][f'{week[6]}'] = weekly_schedule
 
         # need to handle constraints
         if week[6]:
@@ -87,6 +94,12 @@ def main():
 
             schedule['wednesday'][f'{week[2]}'] = wednesday_schedule
 
+    monthly_schedule = {}
+    for duty in service_duties['monthly']['duties']:
+        monthly_schedule[duty['name']] = duty_index[duty['key']
+                                                    ][(i + year_month) % len(duty_index[duty['key']])]
+
+    schedule['monthly'] = monthly_schedule
     # create schedule meta information (name, days, duties)
     schedule['sunday-9am']['meta'] = service_duties['sunday-9am']
     schedule['sunday-9am']['meta']['days'] = [str(week[6])
@@ -98,7 +111,10 @@ def main():
     schedule['wednesday']['meta']['days'] = [str(week[2])
                                              for week in cal if week[2]]
 
-    # monthly duties
+    schedule['weekly']['meta'] = service_duties['weekly']
+    schedule['weekly']['meta']['days'] = [str(week[6])
+                                          for week in cal if week[6]]
+
     # special events
 
     html = render_schedule(schedule)
