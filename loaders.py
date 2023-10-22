@@ -52,6 +52,6 @@ def load_duty_index(men, service_duties):
                 else:
                     duty_index[duty['key']] = [man['formatted_name']]
 
-    # print(duty_index)
+    # print(json.dumps(duty_index))
 
     return duty_index

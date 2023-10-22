@@ -1,10 +1,11 @@
+import json
+
 empty_header_cell = "<th class='empty'></th>"
 empty_data_cell = "<td class='empty'></td>"
 
 
 def render_service_header_row(service_schedule, max_num_services):
-    dates = [f'<th class="day">{service_day}</th>' for service_day in service_schedule.keys() if service_day != 'meta'
-             ]
+    dates = [f'<th class="day">{service_day}</th>' for service_day in service_schedule['meta']['days']]
     num_dates = len(dates)
 
     if num_dates < max_num_services:
@@ -21,7 +22,7 @@ def render_service_header_row(service_schedule, max_num_services):
 
 
 def render_duty_assignment_cells(duty, days, service_schedule):
-    return empty_data_cell.join([f"<td>{service_schedule[date][duty]}</td>" for date in days])
+    return empty_data_cell.join([f"<td>{service_schedule['assignments'][i][duty]}</td>" for i in range(len(days))])
 
 
 def render_duty_row(duty, days, service_assignments, max_num_services):
@@ -43,7 +44,7 @@ def render_duty_row(duty, days, service_assignments, max_num_services):
 def render_duty_assignment_rows(service_assignments, max_num_services):
     # print(service_schedule)
     days = service_assignments['meta']['days']
-    duties = [duty['name'] for duty in service_assignments['meta']['duties']]
+    duties = [duty for duty in service_assignments['meta']['duties']]
 
     return "".join([render_duty_row(duty, days, service_assignments, max_num_services) for duty in duties])
 
@@ -72,24 +73,25 @@ def render_monthly_assignments(assignments):
 
 
 def render_monthly_duties(schedule):
-    print(schedule['monthly'])
-    assignments = [(duty, assigned)
-                   for duty, assigned in schedule['monthly'].items()]
-    return f"""
-        <table>
-            <tbody>
-                {render_monthly_assignments(assignments)}
-            </tbody>
-        </table>
-    """
+    if len(schedule['monthly']['assignments']) > 0:
+        assignments = [(duty, assigned) for duty, assigned in schedule['monthly']['assignments'][0].items()]
+        return f"""
+            <table>
+                <tbody>
+                    {render_monthly_assignments(assignments)}
+                </tbody>
+            </table>
+        """
+    else:
+        return ""
 
 
 def render_schedule(schedule):
     with open('./style.css', 'r') as f:
         style = f.read()
 
-    num_services = len([
-        key for key in schedule['sunday-9am'].keys() if key != 'meta'])
+    # max number of services between sunday and wednesday
+    num_services = max(len(schedule['sunday-9am']['meta']['days']), len(schedule['wednesday']['meta']['days']))
 
     return f"""
         <html>

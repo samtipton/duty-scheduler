@@ -1,4 +1,5 @@
 import calendar
+import json
 import sys
 import pdfkit
 import os
@@ -25,10 +26,43 @@ MONTH_NAMES = [
     "December"
 ]
 
+def add_duties_for_service(service_name, service_day_ord, schedule, round_robin_seed):
+    service_schedule = {}
+
+    for i, duty in enumerate(service_duties[service_name]['duties']):
+        # print(f'i={i}')
+        # print(f'seed={round_robin_seed}')
+        # print(f'index={duty_index[duty["key"]]}')
+        # print(f"index={(i + round_robin_seed) % len(duty_index[duty['key']])}")
+        # print(f"len={len(duty_index[duty['key']])}")
+        # print(f"choice={duty_index[duty['key']][(i + round_robin_seed) % len(duty_index[duty['key']])]}")
+
+        # assign a man to a duty in this service
+        service_schedule[duty['name']] = duty_index[duty['key']][(i + round_robin_seed) % len(duty_index[duty['key']])]
+
+    if service_name not in schedule:
+        schedule[service_name] = {}
+        
+        # add meta information
+        schedule[service_name]['meta'] = {}
+        schedule[service_name]['meta']['duties'] = [duty['name'] for duty in service_duties[service_name]['duties']]
+        schedule[service_name]['meta']['days'] = [f'{service_day_ord}']
+
+        if 'name' in service_duties[service_name]:
+            schedule[service_name]['meta']['name'] = service_duties[service_name]['name']
+    else:
+        schedule[service_name]['meta']['days'].append(f'{service_day_ord}')
+
+    if service_day_ord == -1:
+        schedule[service_name]['assignments'] = [service_schedule]
+    else:
+        if not 'assignments' in schedule[service_name]:
+            schedule[service_name]['assignments'] = [service_schedule]
+        else:
+            schedule[service_name]['assignments'].append(service_schedule)
+
 
 def main():
-    # check duty exclusion rule for that slot
-
     # Accept month and year from command line arguments
     if len(sys.argv) < 4:
         print("Usage: python schedule.py <month> <year> </path/to/output_file>")
@@ -46,76 +80,24 @@ def main():
     schedule = {}
     schedule['month'] = MONTH_NAMES[month-1]
 
-    # consider using objects
+    # need to handle constraints
     for i, week in enumerate(cal):
 
-        # weekly duties
-        weekly_schedule = {}
-        for duty in service_duties['weekly']['duties']:
-            weekly_schedule[duty['name']] = duty_index[duty['key']][(i+year_month) % len(
-                duty_index[duty['key']])]
-
-        if 'weekly' not in schedule:
-            schedule['weekly'] = {}
-
-        schedule['weekly'][f'{week[6]}'] = weekly_schedule
-
-        # need to handle constraints
         if week[6]:
-            sunday_9am_schedule = {}
-            for duty in service_duties['sunday-9am']['duties']:
-                sunday_9am_schedule[duty['name']] = duty_index[duty['key']][(i + year_month) % len(
-                    duty_index[duty['key']])]
+            add_duties_for_service('weekly', week[6], schedule, i + year_month)
+            add_duties_for_service('sunday-9am', week[6], schedule, i + year_month)
+            add_duties_for_service('sunday-1030am', week[6], schedule, i + year_month)
 
-            if 'sunday-9am' not in schedule:
-                schedule['sunday-9am'] = {}
-
-            schedule['sunday-9am'][f'{week[6]}'] = sunday_9am_schedule
-
-            sunday_1030am_schedule = {}
-            for duty in service_duties['sunday-1030am']['duties']:
-                sunday_1030am_schedule[duty['name']] = duty_index[duty['key']][(i+year_month) % len(
-                    duty_index[duty['key']])]
-
-            if 'sunday-1030am' not in schedule:
-                schedule['sunday-1030am'] = {}
-
-            schedule['sunday-1030am'][f'{week[6]}'] = sunday_1030am_schedule
-
-        # todo handle singing service on last wednesday with its own duty
         if week[2]:
-            wednesday_schedule = {}
-            for duty in service_duties['wednesday']['duties']:
-                wednesday_schedule[duty['name']] = duty_index[duty['key']][(i+year_month) % len(
-                    duty_index[duty['key']])]
+            # todo handle singing service on last wednesday with its own duty
+            add_duties_for_service('wednesday', week[2], schedule, i + year_month)
 
-            if 'wednesday' not in schedule:
-                schedule['wednesday'] = {}
+    add_duties_for_service('monthly', -1, schedule, i + year_month)
 
-            schedule['wednesday'][f'{week[2]}'] = wednesday_schedule
+    # todo handle special events (e.g. Gospel Meetings)
 
-    monthly_schedule = {}
-    for duty in service_duties['monthly']['duties']:
-        monthly_schedule[duty['name']] = duty_index[duty['key']
-                                                    ][(i + year_month) % len(duty_index[duty['key']])]
-
-    schedule['monthly'] = monthly_schedule
-    # create schedule meta information (name, days, duties)
-    schedule['sunday-9am']['meta'] = service_duties['sunday-9am']
-    schedule['sunday-9am']['meta']['days'] = [str(week[6])
-                                              for week in cal if week[6]]
-    schedule['sunday-1030am']['meta'] = service_duties['sunday-1030am']
-    schedule['sunday-1030am']['meta']['days'] = [str(week[6])
-                                                 for week in cal if week[6]]
-    schedule['wednesday']['meta'] = service_duties['wednesday']
-    schedule['wednesday']['meta']['days'] = [str(week[2])
-                                             for week in cal if week[2]]
-
-    schedule['weekly']['meta'] = service_duties['weekly']
-    schedule['weekly']['meta']['days'] = [str(week[6])
-                                          for week in cal if week[6]]
-
-    # special events
+    if debug:
+        print(json.dumps(schedule))
 
     html = render_schedule(schedule)
 

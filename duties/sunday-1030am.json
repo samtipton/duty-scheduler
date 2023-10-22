@@ -23,19 +23,39 @@
         },
         {
             "name": "Table Aid Cup (N)",
-            "key": "table_aid_cup"
+            "key": "table_aid_cup",
+            "excludes": [
+                "table_lead_cup",
+                "table_lead_bread",
+                "table_aid_bread"
+            ]
         },
         {
             "name": "Table Lead Cup (N)",
-            "key": "table_lead_cup"
+            "key": "table_lead_cup",
+            "excludes": [
+                "table_aid_cup",
+                "table_lead_bread",
+                "table_aid_bread"
+            ]
         },
         {
             "name": "Table Lead Bread (S)",
-            "key": "table_lead_bread"
+            "key": "table_lead_bread",
+            "excludes": [
+                "table_aid_cup",
+                "table_lead_cup",
+                "table_aid_bread"
+            ]
         },
         {
             "name": "Table Aid Bread (S)",
-            "key": "table_aid_bread"
+            "key": "table_aid_bread",
+            "excludes": [
+                "table_aid_cup",
+                "table_lead_cup",
+                "table_lead_bread"
+            ]
         },
         {
             "name": "Lesson",

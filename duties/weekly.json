@@ -2,15 +2,28 @@
     "duties": [
         {
             "name": "Weekly Usher",
-            "key": "usher"
+            "key": "usher",
+            "excludes": [
+                "alt_usher",
+                "first_song_leader",
+                "song_leader"
+            ]
         },
         {
             "name": "Weekly Alt Usher",
-            "key": "alt_usher"
+            "key": "alt_usher",
+            "excludes": [
+                "usher",
+                "first_song_leader",
+                "song_leader"
+            ]
         },
         {
             "name": "Sound Board Operator",
-            "key": "sound_board_operator"
+            "key": "sound_board_operator",
+            "excludes": [
+                "*"
+            ]
         },
         {
             "name": "SS",
