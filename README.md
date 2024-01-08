@@ -1,8 +1,16 @@
 # Olsen Park church of Christ Duty Roster Generator
 
-## Usage:
+## Installation
+
+In project root:
+
+`$ python -m venv venv`
 
 `$ source venv/bin/activate`
+
+`$ pip install -r requirements.txt`
+
+## Usage:
 
 `$ python3 schedule.py <month_number> <year> path/to/output/file`
 
@@ -35,3 +43,10 @@ However, you could require a case where Wednesday lessons are excluded from bein
 These files are more easily maintained via spreadsheet and can be found in this [sheet](https://docs.google.com/spreadsheets/d/1ZvrvidGAKMgeG7aW0cY0kQ-0DDIzW-x2EG4FS-oczqI/edit?usp=sharing) for Olsen Park.
 
 For other congregations, I suggest you create your own spreadsheets to import your own csvs.
+
+#### Known Problems
+
+Creating a preference-based, round-robin assignments with exclusions between assignments has some challenges and trade-offs between all these concerns has to be resolved by sacrificing on one or more concerns. Round-robin is the first priority, next is preference, then exclusions are looked at and round robin used to find next available man to assign.
+
+1. Duplicate assignments two weeks in a row is not being handled right now
+2. The same man being chosen more than usual in a given month.

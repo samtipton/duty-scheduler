@@ -1,4 +1,8 @@
 {
+    "daysOfWeek": [
+        2,
+        6
+    ],
     "duties": [
         {
             "name": "Monthly Lord's Supper Preparation",

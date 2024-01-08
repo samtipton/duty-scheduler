@@ -1,7 +1,9 @@
 import json
 
-empty_header_cell = "<th class='empty'></th>"
-empty_data_cell = "<td class='empty'></td>"
+from schedule import Schedule
+
+EMPTY_HEADER_CELL = "<th class='empty'></th>"
+EMPTY_DATA_CELL = "<td class='empty'></td>"
 
 
 def render_service_header_row(service_schedule, max_num_services):
@@ -12,104 +14,103 @@ def render_service_header_row(service_schedule, max_num_services):
     num_dates = len(dates)
 
     if num_dates < max_num_services:
-        dates.append(empty_header_cell)
+        dates.append(EMPTY_HEADER_CELL)
 
-    dates_html = empty_data_cell.join(dates)
+    dates_html = EMPTY_DATA_CELL.join(dates)
     return f"""
         <tr>
             <th class="service-name">{service_schedule['name']}</th>
-            {empty_header_cell}
+            {EMPTY_HEADER_CELL}
             {dates_html}
         </tr>
     """
 
 
-def render_duty_assignment_cells(duty, days, schedule):
-    return empty_data_cell.join(
-        [f"<td>{schedule['assignments'][i][duty]}</td>" for i in range(len(days))]
+def render_duty_assignment_cells(duty, num_services, schedule: Schedule):
+    return EMPTY_DATA_CELL.join(
+        [
+            f"<td>{schedule.assignments(i)[duty['key']]}</td>"
+            for i in range(0, num_services)
+            if duty["key"] in schedule.assignments(i)
+        ]
     )
 
 
-def render_duty_row(duty, days, schedule, duty_labels, max_num_services):
+def render_duty_row(duty, days, schedule, num_services):
     padding = ""
-    if len(days) < max_num_services:
-        padding = empty_data_cell + "<td></td>"
+    if len(days) < num_services:
+        padding = EMPTY_DATA_CELL + "<td></td>"
 
     return f"""
         <tr>
-            <td>{duty_labels[duty]}</td>
-            {empty_data_cell}
-            {render_duty_assignment_cells(duty, days, schedule)}
+            <td>{duty['name']}</td>
+            {EMPTY_DATA_CELL}
+            {render_duty_assignment_cells(duty, num_services, schedule)}
             {padding}
         </tr>
     """
 
 
-def render_duty_assignment_rows(
-    service_assignments, schedule, duty_labels, max_num_services
-):
+def render_duty_assignment_rows(service_assignments, schedule, num_services):
     # print(service_schedule)
     days = service_assignments["days"]
     duties = [duty for duty in service_assignments["duties"]]
 
     return "".join(
-        [
-            render_duty_row(duty, days, schedule, duty_labels, max_num_services)
-            for duty in duties
-        ]
+        [render_duty_row(duty, days, schedule, num_services) for duty in duties]
     )
 
 
-def render_service(service_key, schedule, duty_labels, max_num_services, header=True):
-    services = schedule[service_key]
+def render_service(service, schedule, max_num_services, header=True):
     header_html = ""
 
     if header:
         header_html = (
-            f"<thead>{render_service_header_row(services, max_num_services)}</thead>"
+            f"<thead>{render_service_header_row(service, max_num_services)}</thead>"
         )
 
     return f"""
         <table>
             {header_html}
-            <tbody>{render_duty_assignment_rows(services, schedule, duty_labels, max_num_services)}</tbody>
+            <tbody>{render_duty_assignment_rows(service, schedule, max_num_services)}</tbody>
         </table>
     """
 
 
-def render_monthly_assignments(schedule, duty_labels):
-    if schedule["assignments"]:
+def render_monthly_assignments(schedule: Schedule):
+    if schedule.assignments(0):
         return "".join(
             [
                 f"""
                     <tr>
-                        <td class="monthly">{duty_labels[duty]}</td>
-                        <td class="assignment">{schedule['assignments'][0][duty]}</td>
+                        <td class="monthly">{duty['name']}</td>
+                        <td class="assignment">{schedule.assignments(0)[duty['key']]}</td>
                     </tr>"""
-                for i, duty in enumerate(schedule["monthly"]["duties"])
+                for i, duty in enumerate(schedule.service("monthly")["duties"])
             ]
         )
     else:
         return ""
 
 
-def render_monthly_duties(schedule, duty_labels):
+def render_monthly_duties(schedule):
     return f"""
         <table>
             <tbody>
-                {render_monthly_assignments(schedule, duty_labels)}
+                {render_monthly_assignments(schedule)}
             </tbody>
         </table>
     """
 
 
-def render_schedule(schedule, duty_labels):
+def render_schedule(schedule):
     with open("./style.css", "r") as f:
         style = f.read()
 
     # max number of services between sunday and wednesday
     num_services = max(
-        len(schedule["sunday-9am"]["days"]), len(schedule["wednesday"]["days"])
+        len(schedule.service("sunday-9am")["days"]),
+        len(schedule.service("wednesday")["days"]),
     )
 
     return f"""
@@ -121,16 +122,16 @@ def render_schedule(schedule, duty_labels):
             </head>
             <body>
                 <div class="header">
-                    <h1>{schedule['month']}</h1>
+                    <h1>{schedule.month}</h1>
                 </div>
-                {render_service('sunday-9am', schedule, duty_labels, num_services)}
+                {render_service(schedule.service('sunday-9am'), schedule, num_services)}
                 <div class="banner dark-background">
                     2nd Service 10:30
                 </div>
-                {render_service('sunday-1030am', schedule, duty_labels, num_services, header=False)}
-                {render_service('wednesday', schedule, duty_labels, num_services)}
-                {render_service('weekly', schedule, duty_labels, num_services, header=False)}
-                {render_monthly_duties(schedule, duty_labels)}
+                {render_service(schedule.service('sunday-1030am'), schedule, num_services, header=False)}
+                {render_service(schedule.service('wednesday'), schedule, num_services)}
+                {render_service(schedule.service('weekly'), schedule, num_services, header=False)}
+                {render_monthly_duties(schedule)}
             </body>
         </html>
         """

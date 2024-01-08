@@ -1,5 +1,8 @@
 {
     "name": "Wednesday",
+    "daysOfWeek": [
+        2
+    ],
     "duties": [
         {
             "name": "Announcements",

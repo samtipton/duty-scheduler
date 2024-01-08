@@ -14,8 +14,7 @@ def load_service_duties():
                     {duty["key"]: duty["name"] for duty in data["duties"]}
                 )
                 service_duties[filename[:-5]] = data
-    service_duties["all"] = all_duties
-    return service_duties
+    return service_duties, all_duties
 
 
 def load_service_duty_exclusions_csv():
@@ -77,7 +76,6 @@ def load_duty_index(men, service_duties):
         for duty in service["duties"]
     ]
 
-    # print(men)
     for man in sorted_men:
         for duty in duties:
             if duty["key"] in men[man["formatted_name"]]["duties"]:
