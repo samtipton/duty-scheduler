@@ -1,5 +1,9 @@
 import calendar
+
+calendar.setfirstweekday(calendar.SUNDAY)
+
 import json
+from typing import Dict
 
 MONTH_NAMES = [
     "January",
@@ -17,20 +21,25 @@ MONTH_NAMES = [
 ]
 
 
+class Service:
+    def __init__(self, name, calender):
+        pass
+
+
 class Schedule:
     def __init__(self, year, month_int, service_duties):
         self.year = year
         self.month_int = month_int
         self.month = MONTH_NAMES[month_int - 1]
-        cal = calendar.monthcalendar(year, month_int)
+        self.cal = calendar.monthcalendar(year, month_int)
 
-        self._assignments = [{} for week in cal]
-        self._services = self.init_service_duties(cal, service_duties)
+        self._assignments = [{} for week in self.cal]
+        self._services = self.init_service_duties(self.cal, service_duties)
 
     def init_service_duties(self, cal, service_duties):
         services = service_duties.copy()
 
-        for service_name, service in service_duties.items():
+        for service in service_duties.values():
             service["days"] = []
             for day in service["daysOfWeek"]:
                 for week in cal:
@@ -49,10 +58,12 @@ class Schedule:
     def assign(self, week, duty_key, name):
         self._assignments[week][duty_key] = name
 
-    def assignments(self, week):
+    def assignments(self, week) -> Dict[str, str]:
+        if week >= len(self._assignments):
+            return {}
         return self._assignments[week]
 
-    def assignment(self, week, duty_key):
+    def assignment(self, week, duty_key) -> str:
         return self._assignments[week][duty_key]
 
     def __str__(self):

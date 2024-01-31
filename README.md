@@ -12,11 +12,17 @@ In project root:
 
 ## Usage:
 
-`$ python3 schedule.py <month_number> <year> path/to/output/file`
+Make sure you're in the virtual environment by running:
+
+`$ source venv/bin/activate`
+
+then run the scheduler script:
+
+`$ python3 scheduler.py <month_number> <year> path/to/output/file`
 
 Example:
 
-`$ python3 schedule.py 1 2024 ~/Desktop/roster-1-2024.pdf`
+`$ python3 scheduler.py 1 2024 ~/Desktop/roster-1-2024.pdf`
 
 ## Configuration
 
@@ -46,7 +52,7 @@ For other congregations, I suggest you create your own spreadsheets to import yo
 
 #### Known Problems
 
-Creating a preference-based, round-robin assignments with exclusions between assignments has some challenges and trade-offs between all these concerns has to be resolved by sacrificing on one or more concerns. Round-robin is the first priority, next is preference, then exclusions are looked at and round robin used to find next available man to assign.
-
-1. Duplicate assignments two weeks in a row is not being handled right now
-2. The same man being chosen more than usual in a given month.
+Assignments are made in a best-effort, single-pass approach.
+No statistical artifact is generated to compare assignment frequencies month to month.
+The round-robin approach with a date-seeded, step-incrementing index should make it so that each man gets a chance to fulfill each of their elected duties throughout a series of months.
+However, manual checks and fine-tuning is encouraged.

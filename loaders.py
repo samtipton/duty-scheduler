@@ -39,49 +39,37 @@ def load_service_duty_exclusions_csv():
 
 
 def load_men_csv():
+    # map each man to the duties they have signed up for
     men = {}
+
+    # reverse index of men: map each duty to the men who signed up for it
+    duty_index = {}
+
     with open("./men/men.csv", newline="") as csvfile:
         dict_reader = csv.DictReader(csvfile)
         headers = dict_reader.fieldnames[1:]
 
         reader = csv.reader(csvfile, delimiter=",")
         for row in reader:
-            duties = [h for i, h in enumerate(headers) if row[i + 1] == "1"]
+            elected_duties = [h for i, h in enumerate(headers) if row[i + 1] == "1"]
+            name = row[0]
 
-            if duties:
-                last_name, first_name = row[0].split(", ")
-                men[row[0]] = {
-                    "duties": duties,
-                    "formatted_name": row[0],
+            [
+                duty_index[duty].append(name)
+                if duty in duty_index
+                else duty_index.update({duty: [name]})
+                for duty in elected_duties
+            ]
+
+            if elected_duties:
+                last_name, first_name = name.split(", ")
+                men[name] = {
+                    "duties": elected_duties,
+                    "formatted_name": name,
                     "last_name": last_name,
                     "first_name": first_name,
                 }
 
-    return men
+    [available_men.sort() for available_men in duty_index.values()]
 
-
-def load_duty_index(men, service_duties):
-    """
-    index duties to men that can perform them
-    """
-    duty_index = {}
-
-    sorted_men = [man for man in men.values()]
-    sorted_men.sort(key=lambda man: man["last_name"])
-
-    duties = [
-        duty
-        for service in service_duties.values()
-        if "duties" in service
-        for duty in service["duties"]
-    ]
-
-    for man in sorted_men:
-        for duty in duties:
-            if duty["key"] in men[man["formatted_name"]]["duties"]:
-                if duty["key"] in duty_index:
-                    duty_index[duty["key"]].append(man["formatted_name"])
-                else:
-                    duty_index[duty["key"]] = [man["formatted_name"]]
-
-    return duty_index
+    return men, duty_index
